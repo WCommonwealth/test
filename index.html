@@ -1,48 +1,9 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>W Commonwealth Network</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>W Commonwealth Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
   <style>
     * {
@@ -69,6 +30,7 @@
       box-shadow: 0 0 50px rgba(255, 105, 180, 0.9), 0 0 80px rgba(128, 0, 128, 0.7), 0 0 100px rgba(255, 215, 0, 0.3);
       text-align: center;
       width: 500px;
+      max-width: 90vw;
       border: 5px solid #ff69b4;
       position: relative;
       overflow: hidden;
@@ -238,103 +200,47 @@
     <div id="error" class="error-message">Invalid credentials.</div>
   </div>
 
-  <script type="text/javascript">
-    var gk_isXlsx = false;
-    var gk_xlsxFileLookup = {};
-    var gk_fileData = {};
-    function filledCell(cell) {
-      return cell !== '' && cell != null;
-    }
-    function loadFileData(filename) {
-      if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-        try {
-          var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-          var firstSheetName = workbook.SheetNames[0];
-          var worksheet = workbook.Sheets[firstSheetName];
-          var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-          var filteredData = jsonData.filter(row => row.some(filledCell));
-          var headerRowIndex = filteredData.findIndex((row, index) =>
-            row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-          );
-          if (headerRowIndex === -1 || headerRowIndex > 25) {
-            headerRowIndex = 0;
-          }
-          var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
-          csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-          return csv;
-        } catch (e) {
-          console.error(e);
-          return "";
-        }
-      }
-      return gk_fileData[filename] || "";
-    }
-
-    // Function to hash a string using SHA-256
+  <script>
     async function hashPassword(password) {
-      try {
-        const msgBuffer = new TextEncoder().encode(password);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        console.log('Hashed password:', hashHex); // Debug: Log the hashed password
-        return hashHex;
-      } catch (e) {
-        console.error('Hashing error:', e);
-        throw new Error('Failed to hash password');
-      }
+      const msgBuffer = new TextEncoder().encode(password);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return hashHex;
     }
 
     async function login() {
-      const username = document.getElementById('username').value;
+      const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
       const error = document.getElementById('error');
 
-      try {
-        // Hash the entered password
-        const hashedPassword = await hashPassword(password);
+      if (!username || !password) {
+        error.textContent = 'Please enter both username and password.';
+        error.style.display = 'block';
+        return;
+      }
 
-        // Fetch the users.txt file
-        const response = await fetch('users.txt');
-        if (!response.ok) {
-          throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+      const hashedPassword = await hashPassword(password);
+
+      const response = await fetch('users.txt');
+      const text = await response.text();
+
+      const users = {};
+      text.split('\n').forEach(line => {
+        const [user, hash] = line.trim().split(':');
+        if (user && hash) {
+          users[user] = hash.trim();
         }
-        const text = await response.text();
-        console.log('users.txt content:', text); // Debug: Log the raw content
+      });
 
-        // Parse users.txt into an object
-        const users = text.split('\n').reduce((acc, line) => {
-          const trimmedLine = line.trim();
-          if (trimmedLine) { // Skip empty lines
-            const [user, hash] = trimmedLine.split(':');
-            if (user && hash) {
-              acc[user] = hash;
-            } else {
-              console.warn('Invalid line in users.txt:', trimmedLine); // Debug: Warn about malformed lines
-            }
-          }
-          return acc;
-        }, {});
-        console.log('Parsed users:', users); // Debug: Log the parsed users object
-
-        // Check if username exists and hashed password matches
-        if (users[username] && users[username] === hashedPassword) {
-          console.log('Login successful for user:', username); // Debug: Log success
-          window.location.href = 'main.html';
-          error.style.display = 'none';
-        } else {
-          console.log('Login failed: Invalid username or password'); // Debug: Log failure
-          error.textContent = 'Invalid credentials.';
-          error.style.display = 'block';
-        }
-      } catch (e) {
-        console.error('Login error:', e.message); // Debug: Log specific error
-        error.textContent = `Error during login: ${e.message}. Please try again.`;
+      if (users[username] && users[username] === hashedPassword) {
+        window.location.href = 'main.html';
+      } else {
+        error.textContent = 'Invalid username or password.';
         error.style.display = 'block';
       }
     }
 
-    // Enter key support for login
     document.getElementById('password').addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         login();
