@@ -256,6 +256,10 @@
             <div class="app-icon" style="background:linear-gradient(135deg,rgba(167,139,250,0.2),rgba(167,139,250,0.05));">✉️</div>
             <div class="app-name" style="color:var(--accent2);">Mail</div>
           </a>
+          <a href="call.html" class="app-item">
+            <div class="app-icon" style="background:linear-gradient(135deg,rgba(52,211,153,0.2),rgba(52,211,153,0.05));">📞</div>
+            <div class="app-name" style="color:var(--accent3);">Voice</div>
+          </a>
           <div class="app-item soon">
             <div class="app-icon" style="background:linear-gradient(135deg,rgba(255,170,50,0.2),rgba(255,170,50,0.05));">📈</div>
             <div class="app-name" style="color:var(--accent4);">Strategy</div>
@@ -307,6 +311,12 @@
         <div class="quick-card-name">Mail</div>
         <div class="quick-card-desc">Private by design</div>
         <div class="quick-card-badge">Active</div>
+      </a>
+      <a href="call.html" class="quick-card" style="border-color:rgba(52,211,153,0.15);" onmouseover="this.style.borderColor='rgba(52,211,153,0.4)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.4),0 0 30px rgba(52,211,153,0.08)'" onmouseout="this.style.borderColor='rgba(52,211,153,0.15)';this.style.boxShadow=''">
+        <div class="quick-card-icon">📞</div>
+        <div class="quick-card-name" style="color:var(--accent3);">Voice</div>
+        <div class="quick-card-desc">P2P encrypted call</div>
+        <div class="quick-card-badge" style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);color:var(--accent3);">Active</div>
       </a>
       <div class="quick-card qc-3 soon">
         <div class="quick-card-icon">📈</div>
@@ -445,7 +455,7 @@
 
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script>
-    const API = 'https://produce-newsletters-catalog-supreme.trycloudflare.com';
+    const API = 'https://TUNELUL_TAU.trycloudflare.com';
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username') || 'Member';
 
