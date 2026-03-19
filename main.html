@@ -14,6 +14,8 @@
       --accent: #3ecfff;
       --accent2: #a78bfa;
       --accent3: #34d399;
+      --accent4: rgba(255,170,50,0.95);
+      --accent5: rgba(251,113,133,0.95);
       --text-primary: rgba(255,255,255,0.95);
       --text-secondary: rgba(255,255,255,0.55);
       --text-muted: rgba(255,255,255,0.3);
@@ -26,6 +28,7 @@
     html { scroll-behavior:smooth; }
     body { font-family:var(--font-main); background:var(--bg-deep); color:var(--text-primary); min-height:100vh; overflow-x:hidden; }
 
+    /* BG */
     .bg-canvas { position:fixed; inset:0; z-index:0; overflow:hidden; }
     .bg-canvas::before {
       content:''; position:absolute; inset:0;
@@ -41,23 +44,120 @@
     .orb-3 { width:300px;height:300px;background:radial-gradient(circle,rgba(52,211,153,0.10),transparent);top:50%;left:60%;animation-delay:-14s; }
     @keyframes drift { 0%,100%{transform:translate(0,0) scale(1);} 33%{transform:translate(40px,-30px) scale(1.05);} 66%{transform:translate(-20px,40px) scale(0.95);} }
 
-    nav { position:fixed;top:0;left:0;right:0;z-index:100;padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(5,8,16,0.70);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--glass-border); }
+    /* NAV */
+    nav {
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      padding:0 32px;height:64px;
+      display:flex;align-items:center;justify-content:space-between;
+      background:rgba(5,8,16,0.75);
+      backdrop-filter:blur(24px) saturate(180%);
+      -webkit-backdrop-filter:blur(24px) saturate(180%);
+      border-bottom:1px solid var(--glass-border);
+    }
     .nav-logo { display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;letter-spacing:0.04em; }
-    .nav-logo-icon { width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:14px;font-family:var(--font-mono);font-weight:500;color:#000; }
+    .nav-logo-icon { width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:14px;font-family:var(--font-mono);font-weight:700;color:#000; }
     .nav-label { font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;padding:3px 8px;border:1px solid rgba(62,207,255,0.3);border-radius:4px;background:rgba(62,207,255,0.05); }
-    .nav-right { display:flex;align-items:center;gap:16px; }
+    .nav-right { display:flex;align-items:center;gap:12px; }
     .nav-status { display:flex;align-items:center;gap:6px;font-size:12px;font-family:var(--font-mono);color:var(--text-secondary); }
     .status-dot { width:7px;height:7px;border-radius:50%;background:var(--accent3);box-shadow:0 0 8px var(--accent3);animation:pulse-dot 2s ease-in-out infinite; }
     @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+    /* APPS GRID BUTTON */
+    .apps-trigger {
+      width:36px;height:36px;border-radius:10px;
+      background:var(--glass-bg);border:1px solid var(--glass-border);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:all 0.2s;position:relative;
+    }
+    .apps-trigger:hover { background:rgba(255,255,255,0.12);border-color:var(--glass-highlight); }
+    .apps-trigger-grid {
+      display:grid;grid-template-columns:repeat(3,4px);gap:2px;
+    }
+    .apps-trigger-dot { width:4px;height:4px;border-radius:1px;background:var(--text-secondary);transition:background 0.2s; }
+    .apps-trigger:hover .apps-trigger-dot { background:var(--text-primary); }
+
+    /* APPS PANEL */
+    .apps-panel {
+      display:none;
+      position:absolute;
+      top:calc(64px + 8px);
+      right:32px;
+      width:320px;
+      background:rgba(8,12,28,0.97);
+      backdrop-filter:blur(40px) saturate(180%);
+      -webkit-backdrop-filter:blur(40px) saturate(180%);
+      border:1px solid var(--glass-border);
+      border-radius:20px;
+      padding:20px;
+      box-shadow:0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset;
+      z-index:200;
+      animation:panelIn 0.2s ease;
+    }
+    .apps-panel.open { display:block; }
+    @keyframes panelIn { from{opacity:0;transform:translateY(-8px) scale(0.97);} to{opacity:1;transform:translateY(0) scale(1);} }
+    .apps-panel::before {
+      content:'';position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,var(--glass-highlight),transparent);
+      border-radius:20px 20px 0 0;
+    }
+    .apps-panel-title {
+      font-family:var(--font-mono);font-size:10px;letter-spacing:0.2em;
+      text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;
+      padding-bottom:12px;border-bottom:1px solid var(--glass-border);
+    }
+    .apps-grid {
+      display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+      margin-bottom:16px;
+    }
+    .app-item {
+      display:flex;flex-direction:column;align-items:center;
+      padding:14px 8px;border-radius:14px;
+      border:1px solid transparent;
+      cursor:pointer;transition:all 0.2s;
+      text-decoration:none;gap:8px;
+      position:relative;
+    }
+    .app-item:hover { background:var(--glass-bg);border-color:var(--glass-border); }
+    .app-item.soon { opacity:0.45;cursor:default;pointer-events:none; }
+    .app-icon {
+      width:44px;height:44px;border-radius:13px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:20px;position:relative;
+    }
+    .app-icon::after {
+      content:'';position:absolute;inset:0;border-radius:13px;
+      background:inherit;filter:blur(12px);opacity:0.5;transform:scale(1.15);z-index:-1;
+    }
+    .app-name {
+      font-size:11px;font-weight:500;color:var(--text-secondary);
+      text-align:center;letter-spacing:0.02em;line-height:1.2;
+    }
+    .app-item:hover .app-name { color:var(--text-primary); }
+    .app-soon-badge {
+      position:absolute;top:6px;right:6px;
+      font-family:var(--font-mono);font-size:8px;
+      padding:1px 5px;border-radius:4px;
+      background:rgba(255,200,50,0.12);border:1px solid rgba(255,200,50,0.3);
+      color:rgba(255,200,50,0.8);letter-spacing:0.05em;
+    }
+    .apps-panel-footer {
+      font-family:var(--font-mono);font-size:10px;
+      color:var(--text-muted);text-align:center;
+      padding-top:12px;border-top:1px solid var(--glass-border);
+      letter-spacing:0.1em;
+    }
+
+    /* USER MENU */
     .nav-user { display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:20px;font-size:13px;cursor:pointer;transition:all 0.2s;position:relative; }
     .nav-user:hover { background:rgba(255,255,255,0.10); }
     .nav-user-avatar { width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:10px;color:#000;font-weight:700; }
-    .nav-dropdown { display:none;position:absolute;top:calc(100% + 8px);right:0;background:rgba(10,14,30,0.95);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:14px;padding:12px;min-width:160px;box-shadow:0 20px 60px rgba(0,0,0,0.5); }
+    .nav-dropdown { display:none;position:absolute;top:calc(100% + 8px);right:0;background:rgba(10,14,30,0.97);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:14px;padding:12px;min-width:160px;box-shadow:0 20px 60px rgba(0,0,0,0.5); }
     .nav-user.open .nav-dropdown { display:block; }
     .dropdown-name { font-family:var(--font-mono);font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;padding:4px 8px 10px;border-bottom:1px solid var(--glass-border);margin-bottom:8px; }
     .dropdown-btn { width:100%;padding:8px 10px;background:rgba(255,60,60,0.08);border:1px solid rgba(255,60,60,0.2);border-radius:8px;color:rgba(255,100,100,0.9);font-size:12px;font-family:var(--font-main);cursor:pointer;transition:all 0.2s;text-align:left;letter-spacing:0.05em; }
     .dropdown-btn:hover { background:rgba(255,60,60,0.15); }
 
+    /* HERO */
     .hero { position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 40px 60px;text-align:center; }
     .hero-eyebrow { font-family:var(--font-mono);font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:24px;opacity:0;animation:fadeUp 0.8s ease forwards 0.2s;display:flex;align-items:center;gap:10px; }
     .hero-eyebrow::before { content:'';width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--accent)); }
@@ -65,16 +165,76 @@
     .hero-title { font-size:clamp(48px,7vw,88px);font-weight:700;line-height:1.05;letter-spacing:-0.03em;margin-bottom:20px;opacity:0;animation:fadeUp 0.9s ease forwards 0.35s; }
     .hero-title .line-1 { display:block;color:var(--text-primary); }
     .hero-title .line-2 { display:block;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 50%,var(--accent3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
-    .hero-sub { font-size:18px;color:var(--text-secondary);font-weight:300;max-width:500px;line-height:1.6;margin-bottom:60px;opacity:0;animation:fadeUp 0.9s ease forwards 0.5s; }
+    .hero-sub { font-size:18px;color:var(--text-secondary);font-weight:300;max-width:500px;line-height:1.6;margin-bottom:48px;opacity:0;animation:fadeUp 0.9s ease forwards 0.5s; }
     @keyframes fadeUp { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
 
-    .slideshow-wrapper { position:relative;z-index:1;width:100%;max-width:1100px;margin:0 auto;opacity:0;animation:fadeUp 1s ease forwards 0.7s; }
-    .slides-container { position:relative;border-radius:var(--radius-xl);overflow:hidden;background:var(--glass-bg);border:1px solid var(--glass-border);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);box-shadow:0 0 0 1px rgba(255,255,255,0.05) inset,0 40px 120px rgba(0,0,0,0.6),0 0 60px rgba(62,207,255,0.04);aspect-ratio:16/7;min-height:380px; }
+    /* QUICK ACCESS CARDS */
+    .quick-grid {
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:12px;
+      width:100%;
+      max-width:1100px;
+      margin-bottom:40px;
+      opacity:0;
+      animation:fadeUp 1s ease forwards 0.55s;
+    }
+    .quick-card {
+      background:var(--glass-bg);
+      border:1px solid var(--glass-border);
+      border-radius:20px;
+      padding:20px 16px;
+      display:flex;flex-direction:column;align-items:center;gap:10px;
+      text-decoration:none;
+      cursor:pointer;
+      transition:all 0.25s;
+      position:relative;
+      overflow:hidden;
+      backdrop-filter:blur(20px);
+    }
+    .quick-card::before {
+      content:'';position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,var(--glass-highlight),transparent);
+    }
+    .quick-card:hover {
+      transform:translateY(-3px);
+      box-shadow:0 20px 40px rgba(0,0,0,0.4);
+    }
+    .quick-card.soon { opacity:0.5;cursor:default;pointer-events:none; }
+    .quick-card-icon { font-size:26px; }
+    .quick-card-name { font-size:12px;font-weight:600;letter-spacing:0.03em; }
+    .quick-card-desc { font-size:10px;font-family:var(--font-mono);color:var(--text-muted);text-align:center;letter-spacing:0.05em; }
+    .quick-card-badge {
+      font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;
+      padding:2px 8px;border-radius:20px;margin-top:2px;
+    }
 
+    .qc-1:hover { border-color:rgba(62,207,255,0.4);box-shadow:0 20px 40px rgba(0,0,0,0.4),0 0 30px rgba(62,207,255,0.08); }
+    .qc-1 .quick-card-name { color:var(--accent); }
+    .qc-1 .quick-card-badge { background:rgba(62,207,255,0.1);border:1px solid rgba(62,207,255,0.25);color:var(--accent); }
+
+    .qc-2:hover { border-color:rgba(167,139,250,0.4);box-shadow:0 20px 40px rgba(0,0,0,0.4),0 0 30px rgba(167,139,250,0.08); }
+    .qc-2 .quick-card-name { color:var(--accent2); }
+    .qc-2 .quick-card-badge { background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.25);color:var(--accent2); }
+
+    .qc-3:hover { border-color:rgba(255,170,50,0.4);box-shadow:0 20px 40px rgba(0,0,0,0.4),0 0 30px rgba(255,170,50,0.08); }
+    .qc-3 .quick-card-name { color:var(--accent4); }
+    .qc-3 .quick-card-badge { background:rgba(255,170,50,0.1);border:1px solid rgba(255,170,50,0.25);color:var(--accent4); }
+
+    .qc-4:hover { border-color:rgba(52,211,153,0.4);box-shadow:0 20px 40px rgba(0,0,0,0.4),0 0 30px rgba(52,211,153,0.08); }
+    .qc-4 .quick-card-name { color:var(--accent3); }
+    .qc-4 .quick-card-badge { background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);color:var(--accent3); }
+
+    .qc-5:hover { border-color:rgba(251,113,133,0.4);box-shadow:0 20px 40px rgba(0,0,0,0.4),0 0 30px rgba(251,113,133,0.08); }
+    .qc-5 .quick-card-name { color:var(--accent5); }
+    .qc-5 .quick-card-badge { background:rgba(251,113,133,0.1);border:1px solid rgba(251,113,133,0.25);color:var(--accent5); }
+
+    /* SLIDESHOW */
+    .slideshow-wrapper { position:relative;z-index:1;width:100%;max-width:1100px;margin:0 auto;opacity:0;animation:fadeUp 1s ease forwards 0.75s; }
+    .slides-container { position:relative;border-radius:var(--radius-xl);overflow:hidden;background:var(--glass-bg);border:1px solid var(--glass-border);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);box-shadow:0 0 0 1px rgba(255,255,255,0.05) inset,0 40px 120px rgba(0,0,0,0.6),0 0 60px rgba(62,207,255,0.04);aspect-ratio:16/7;min-height:360px; }
     .slide { position:absolute;inset:0;display:flex;align-items:center;padding:60px 80px;opacity:0;transition:opacity 0.7s cubic-bezier(0.4,0,0.2,1),transform 0.7s cubic-bezier(0.4,0,0.2,1);transform:translateX(60px);pointer-events:none; }
-    .slide.active   { opacity:1;transform:translateX(0);pointer-events:all; }
+    .slide.active { opacity:1;transform:translateX(0);pointer-events:all; }
     .slide.exit-left { opacity:0;transform:translateX(-60px);pointer-events:none; }
-
     .slide-icon { flex-shrink:0;width:80px;height:80px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:36px;margin-right:60px;position:relative; }
     .slide-icon::before { content:'';position:absolute;inset:0;border-radius:inherit;background:inherit;filter:blur(20px);opacity:0.5;transform:scale(1.2); }
     .slide-content { flex:1; }
@@ -89,49 +249,31 @@
     .slide-cta-ghost { background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-primary); }
     .slide-cta-ghost:hover { background:rgba(255,255,255,0.10);transform:scale(1.04); }
     .slide-badge-soon { display:inline-flex;align-items:center;padding:6px 14px;border-radius:50px;font-size:12px;font-family:var(--font-mono);letter-spacing:0.1em;border:1px solid rgba(255,200,50,0.4);background:rgba(255,200,50,0.06);color:rgba(255,200,50,0.8);gap:6px; }
-
     .slide-1 .slide-icon { background:linear-gradient(135deg,rgba(62,207,255,0.20),rgba(62,207,255,0.05)); }
-    .slide-1 .slide-tag,.slide-1 .slide-slogan { color:var(--accent); }
-    .slide-1 .slide-tag-dot { background:var(--accent); }
-    .slide-1 .slide-title { color:var(--accent); }
-
+    .slide-1 .slide-tag,.slide-1 .slide-slogan { color:var(--accent); } .slide-1 .slide-tag-dot { background:var(--accent); } .slide-1 .slide-title { color:var(--accent); }
     .slide-2 .slide-icon { background:linear-gradient(135deg,rgba(167,139,250,0.20),rgba(167,139,250,0.05)); }
-    .slide-2 .slide-tag,.slide-2 .slide-slogan { color:var(--accent2); }
-    .slide-2 .slide-tag-dot { background:var(--accent2); }
-    .slide-2 .slide-title { color:var(--accent2); }
-
+    .slide-2 .slide-tag,.slide-2 .slide-slogan { color:var(--accent2); } .slide-2 .slide-tag-dot { background:var(--accent2); } .slide-2 .slide-title { color:var(--accent2); }
     .slide-3 .slide-icon { background:linear-gradient(135deg,rgba(255,170,50,0.20),rgba(255,170,50,0.05)); }
-    .slide-3 .slide-tag,.slide-3 .slide-slogan { color:rgba(255,170,50,0.90); }
-    .slide-3 .slide-tag-dot { background:rgba(255,170,50,0.90); }
-    .slide-3 .slide-title { color:rgba(255,170,50,0.95); }
-
+    .slide-3 .slide-tag,.slide-3 .slide-slogan { color:rgba(255,170,50,0.90); } .slide-3 .slide-tag-dot { background:rgba(255,170,50,0.90); } .slide-3 .slide-title { color:rgba(255,170,50,0.95); }
     .slide-4 .slide-icon { background:linear-gradient(135deg,rgba(52,211,153,0.20),rgba(52,211,153,0.05)); }
-    .slide-4 .slide-tag,.slide-4 .slide-slogan { color:var(--accent3); }
-    .slide-4 .slide-tag-dot { background:var(--accent3); }
-    .slide-4 .slide-title { color:var(--accent3); }
-
+    .slide-4 .slide-tag,.slide-4 .slide-slogan { color:var(--accent3); } .slide-4 .slide-tag-dot { background:var(--accent3); } .slide-4 .slide-title { color:var(--accent3); }
     .slide-5 .slide-icon { background:linear-gradient(135deg,rgba(251,113,133,0.20),rgba(251,113,133,0.05)); }
-    .slide-5 .slide-tag,.slide-5 .slide-slogan { color:rgba(251,113,133,0.90); }
-    .slide-5 .slide-tag-dot { background:rgba(251,113,133,0.90); }
-    .slide-5 .slide-title { color:rgba(251,113,133,0.95); }
-
+    .slide-5 .slide-tag,.slide-5 .slide-slogan { color:rgba(251,113,133,0.90); } .slide-5 .slide-tag-dot { background:rgba(251,113,133,0.90); } .slide-5 .slide-title { color:rgba(251,113,133,0.95); }
     .slide-art { flex-shrink:0;width:160px;height:160px;position:relative;margin-left:40px;opacity:0.5; }
     .slide-art-ring { position:absolute;border-radius:50%;border:1px solid currentColor;animation:spin-slow 12s linear infinite; }
     @keyframes spin-slow { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
-
-    .slideshow-controls { display:flex;align-items:center;justify-content:center;gap:12px;margin-top:28px; }
+    .slideshow-controls { display:flex;align-items:center;justify-content:center;gap:12px;margin-top:24px; }
     .slide-arrow { width:40px;height:40px;border-radius:50%;background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-primary);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;backdrop-filter:blur(10px); }
     .slide-arrow:hover { background:rgba(255,255,255,0.12);transform:scale(1.1);border-color:var(--glass-highlight); }
-
     .slide-pause { width:40px;height:40px;border-radius:50%;background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-secondary);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-family:var(--font-mono); }
     .slide-pause:hover { background:rgba(255,255,255,0.12);color:var(--text-primary);transform:scale(1.1); }
     .slide-pause.paused { color:var(--accent);border-color:rgba(62,207,255,0.4);background:rgba(62,207,255,0.06); }
-
     .slide-dots { display:flex;gap:8px;align-items:center; }
     .slide-dot { width:6px;height:6px;border-radius:50%;background:var(--text-muted);cursor:pointer;transition:all 0.3s; }
     .slide-dot.active { background:var(--accent);width:22px;border-radius:3px;box-shadow:0 0 8px var(--accent); }
     .slide-progress { position:absolute;bottom:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:0 2px 0 0; }
 
+    /* ABOUT */
     .about-section { position:relative;z-index:1;padding:100px 40px;max-width:900px;margin:0 auto;text-align:center; }
     .about-eyebrow { font-family:var(--font-mono);font-size:11px;letter-spacing:0.25em;color:var(--text-muted);text-transform:uppercase;margin-bottom:40px; }
     .about-card { background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-xl);padding:60px;backdrop-filter:blur(40px);position:relative;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,0.04) inset; }
@@ -144,12 +286,16 @@
     .about-meta-label { font-family:var(--font-mono);font-size:10px;letter-spacing:0.2em;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px; }
     .about-meta-value { font-size:14px;color:var(--text-secondary);font-weight:500; }
     .about-divider { width:1px;height:40px;background:var(--glass-border);align-self:center; }
-
     footer { position:relative;z-index:1;padding:30px 40px;text-align:center;border-top:1px solid var(--glass-border);font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:0.1em; }
 
+    @media (max-width:900px) {
+      .quick-grid { grid-template-columns:repeat(3,1fr); }
+      .quick-card:nth-child(4),.quick-card:nth-child(5) { display:none; }
+    }
     @media (max-width:768px) {
       nav { padding:0 20px; }
       .nav-status { display:none; }
+      .apps-panel { right:16px;width:280px; }
       .slide { flex-direction:column;padding:40px 28px;text-align:center;align-items:center; }
       .slide-icon { margin-right:0;margin-bottom:22px; }
       .slide-art { display:none; }
@@ -157,6 +303,8 @@
       .hero { padding:100px 24px 40px; }
       .about-card { padding:36px 24px; }
       .about-divider { display:none; }
+      .quick-grid { grid-template-columns:repeat(2,1fr); }
+      .quick-card:nth-child(4),.quick-card:nth-child(5) { display:flex; }
     }
   </style>
 </head>
@@ -181,6 +329,47 @@
     </div>
     <div class="nav-right">
       <div class="nav-status"><div class="status-dot"></div><span>Network active</span></div>
+
+      <!-- APPS GRID BUTTON -->
+      <div class="apps-trigger" id="appsTrigger" onclick="toggleApps()">
+        <div class="apps-trigger-grid">
+          <div class="apps-trigger-dot"></div><div class="apps-trigger-dot"></div><div class="apps-trigger-dot"></div>
+          <div class="apps-trigger-dot"></div><div class="apps-trigger-dot"></div><div class="apps-trigger-dot"></div>
+          <div class="apps-trigger-dot"></div><div class="apps-trigger-dot"></div><div class="apps-trigger-dot"></div>
+        </div>
+      </div>
+
+      <!-- APPS PANEL -->
+      <div class="apps-panel" id="appsPanel">
+        <div class="apps-panel-title">Walar Services</div>
+        <div class="apps-grid">
+          <a href="https://wcommonwealth.github.io/encrypt/" target="_blank" class="app-item">
+            <div class="app-icon" style="background:linear-gradient(135deg,rgba(62,207,255,0.2),rgba(62,207,255,0.05));">🔐</div>
+            <div class="app-name" style="color:var(--accent);">Encrypt</div>
+          </a>
+          <a href="inbox.html" class="app-item">
+            <div class="app-icon" style="background:linear-gradient(135deg,rgba(167,139,250,0.2),rgba(167,139,250,0.05));">✉️</div>
+            <div class="app-name" style="color:var(--accent2);">Mail</div>
+          </a>
+          <div class="app-item soon">
+            <div class="app-icon" style="background:linear-gradient(135deg,rgba(255,170,50,0.2),rgba(255,170,50,0.05));">📈</div>
+            <div class="app-name" style="color:var(--accent4);">Strategy</div>
+            <div class="app-soon-badge">soon</div>
+          </div>
+          <div class="app-item soon">
+            <div class="app-icon" style="background:linear-gradient(135deg,rgba(52,211,153,0.2),rgba(52,211,153,0.05));">⬡</div>
+            <div class="app-name" style="color:var(--accent3);">$WLR</div>
+            <div class="app-soon-badge">soon</div>
+          </div>
+          <div class="app-item soon">
+            <div class="app-icon" style="background:linear-gradient(135deg,rgba(251,113,133,0.2),rgba(251,113,133,0.05));">𝕎</div>
+            <div class="app-name" style="color:var(--accent5);">Language</div>
+            <div class="app-soon-badge">soon</div>
+          </div>
+        </div>
+        <div class="apps-panel-footer">Walar Organization · Classified</div>
+      </div>
+
       <div class="nav-user" id="navUser" onclick="toggleDropdown()">
         <div class="nav-user-avatar" id="userAvatar">?</div>
         <span id="navUsername">Member</span>
@@ -201,10 +390,43 @@
     </h1>
     <p class="hero-sub">One interface. Every tool in the Walar ecosystem. Built for those who were trusted with access.</p>
 
+    <!-- QUICK ACCESS CARDS -->
+    <div class="quick-grid">
+      <a href="https://wcommonwealth.github.io/encrypt/" target="_blank" class="quick-card qc-1">
+        <div class="quick-card-icon">🔐</div>
+        <div class="quick-card-name">Encrypt</div>
+        <div class="quick-card-desc">Speak through code</div>
+        <div class="quick-card-badge">Active</div>
+      </a>
+      <a href="inbox.html" class="quick-card qc-2">
+        <div class="quick-card-icon">✉️</div>
+        <div class="quick-card-name">Mail</div>
+        <div class="quick-card-desc">Private by design</div>
+        <div class="quick-card-badge">Active</div>
+      </a>
+      <div class="quick-card qc-3 soon">
+        <div class="quick-card-icon">📈</div>
+        <div class="quick-card-name">Strategy</div>
+        <div class="quick-card-desc">$WLRS index fund</div>
+        <div class="quick-card-badge">Soon</div>
+      </div>
+      <div class="quick-card qc-4 soon">
+        <div class="quick-card-icon">⬡</div>
+        <div class="quick-card-name">$WLR Token</div>
+        <div class="quick-card-desc">Transfer value privately</div>
+        <div class="quick-card-badge">Soon</div>
+      </div>
+      <div class="quick-card qc-5 soon">
+        <div class="quick-card-icon">𝕎</div>
+        <div class="quick-card-name">Language</div>
+        <div class="quick-card-desc">The original code</div>
+        <div class="quick-card-badge">Soon</div>
+      </div>
+    </div>
+
+    <!-- SLIDESHOW -->
     <div class="slideshow-wrapper">
       <div class="slides-container" id="slidesContainer">
-
-        <!-- 1: Encrypt -->
         <div class="slide slide-1 active">
           <div class="slide-icon">🔐</div>
           <div class="slide-content">
@@ -220,8 +442,6 @@
             <div class="slide-art-ring" style="inset:40px;color:rgba(62,207,255,0.10);animation-duration:7s;"></div>
           </div>
         </div>
-
-        <!-- 2: Email -->
         <div class="slide slide-2">
           <div class="slide-icon">✉️</div>
           <div class="slide-content">
@@ -237,14 +457,12 @@
             <div class="slide-art-ring" style="inset:48px;color:rgba(167,139,250,0.10);animation-duration:8s;"></div>
           </div>
         </div>
-
-        <!-- 3: Strategy / WLRS -->
         <div class="slide slide-3">
           <div class="slide-icon">📈</div>
           <div class="slide-content">
             <div class="slide-tag"><div class="slide-tag-dot"></div>03 / Walar Strategy</div>
             <div class="slide-title">The Founders' Playbook.</div>
-            <div class="slide-desc">Access the investment knowledge of the founders via Walar Strategy — <strong style="color:rgba(255,170,50,0.95);font-weight:600;">$WLRS</strong>, an index fund managed by the best investors and researchers of the organization. Focused on Bitcoin and carefully selected cryptocurrencies. Think of it as a private company stock that tracks the portfolio's performance.</div>
+            <div class="slide-desc">Access the investment knowledge of the founders via Walar Strategy — <strong style="color:rgba(255,170,50,0.95);font-weight:600;">$WLRS</strong>, an index fund managed by the best investors and researchers of the organization. Focused on Bitcoin and carefully selected cryptocurrencies.</div>
             <div class="slide-slogan">// index · research · long-term</div>
             <span class="slide-badge-soon">⏳ Coming Soon</span>
           </div>
@@ -254,14 +472,12 @@
             <div class="slide-art-ring" style="inset:48px;color:rgba(255,170,50,0.10);animation-duration:9s;"></div>
           </div>
         </div>
-
-        <!-- 4: WLR Token -->
         <div class="slide slide-4">
           <div class="slide-icon">⬡</div>
           <div class="slide-content">
             <div class="slide-tag"><div class="slide-tag-dot"></div>04 / Walar Token</div>
             <div class="slide-title">$WLR — Transfer, Privately.</div>
-            <div class="slide-desc">The quickest, safest, and most private way to move value inside the circle. Not to be confused with $WLRS — <strong style="color:var(--accent3);font-weight:600;">$WLR</strong> is a utility token for transferring value between members on the blockchain, verifiable by anyone, while $WLRS is a separate index measuring investment performance.</div>
+            <div class="slide-desc">The quickest, safest, and most private way to move value inside the circle. <strong style="color:var(--accent3);font-weight:600;">$WLR</strong> is a utility token for transferring value between members on the blockchain, verifiable by anyone but understood only by us.</div>
             <div class="slide-slogan">// private · instant · on-chain</div>
             <span class="slide-badge-soon">⏳ Coming Soon</span>
           </div>
@@ -271,8 +487,6 @@
             <div class="slide-art-ring" style="inset:48px;color:rgba(52,211,153,0.10);animation-duration:7s;"></div>
           </div>
         </div>
-
-        <!-- 5: Language -->
         <div class="slide slide-5">
           <div class="slide-icon">𝕎</div>
           <div class="slide-content">
@@ -288,13 +502,11 @@
             <div class="slide-art-ring" style="inset:48px;color:rgba(251,113,133,0.10);animation-duration:6s;"></div>
           </div>
         </div>
-
         <div class="slide-progress" id="slideProgress" style="width:0%"></div>
       </div>
-
       <div class="slideshow-controls">
         <button class="slide-arrow" onclick="prevSlide()">←</button>
-        <button class="slide-pause" id="pauseBtn" onclick="togglePause()" title="Pause / Resume (Space)">⏸</button>
+        <button class="slide-pause" id="pauseBtn" onclick="togglePause()" title="Space to pause">⏸</button>
         <div class="slide-dots">
           <div class="slide-dot active" onclick="goToSlide(0)"></div>
           <div class="slide-dot" onclick="goToSlide(1)"></div>
@@ -310,40 +522,22 @@
   <section class="about-section">
     <div class="about-eyebrow">The Organization · Est. 2021 · Transilvania, RO</div>
     <div class="about-card">
-      <div class="about-quote">
-        A private organization built on <em>privacy</em>, <em>trust</em>, and the silent pursuit of something greater.
-      </div>
-      <div class="about-body">
-        Walar is a private organization that focuses on privacy solutions, experimenting and growing its assets. The core of the union is two anonymous founders who built the ecosystem from the ground up over the years. The organization is located in Transilvania, Romania, and there is nothing else to be known. If you are reading this — the founders trust you and have granted you access to their private network. Do not take that lightly.
-      </div>
+      <div class="about-quote">A private organization built on <em>privacy</em>, <em>trust</em>, and the silent pursuit of something greater.</div>
+      <div class="about-body">Walar is a private organization that focuses on privacy solutions, experimenting and growing its assets. The core of the union is two anonymous founders who built the ecosystem from the ground up over the years. The organization is located in Transilvania, Romania, and there is nothing else to be known. If you are reading this — the founders trust you and have granted you access to their private network. Do not take that lightly.</div>
       <div class="about-meta">
-        <div class="about-meta-item">
-          <div class="about-meta-label">Founded</div>
-          <div class="about-meta-value">Somewhere around 2021</div>
-        </div>
+        <div class="about-meta-item"><div class="about-meta-label">Founded</div><div class="about-meta-value">Somewhere around 2021</div></div>
         <div class="about-divider"></div>
-        <div class="about-meta-item">
-          <div class="about-meta-label">Location</div>
-          <div class="about-meta-value">Transilvania, RO</div>
-        </div>
+        <div class="about-meta-item"><div class="about-meta-label">Location</div><div class="about-meta-value">Transilvania, RO</div></div>
         <div class="about-divider"></div>
-        <div class="about-meta-item">
-          <div class="about-meta-label">Core</div>
-          <div class="about-meta-value">2 anonymous founders</div>
-        </div>
+        <div class="about-meta-item"><div class="about-meta-label">Core</div><div class="about-meta-value">2 anonymous founders</div></div>
         <div class="about-divider"></div>
-        <div class="about-meta-item">
-          <div class="about-meta-label">Access</div>
-          <div class="about-meta-value">By trust only</div>
-        </div>
+        <div class="about-meta-item"><div class="about-meta-label">Access</div><div class="about-meta-value">By trust only</div></div>
       </div>
     </div>
   </section>
 
   <footer>
-    <span style="font-family:var(--font-mono);letter-spacing:0.1em;">
-      © WALAR ORGANIZATION · CLASSIFIED · TRANSYLVANIA, RO
-    </span>
+    <span style="font-family:var(--font-mono);letter-spacing:0.1em;">© WALAR ORGANIZATION · CLASSIFIED · TRANSYLVANIA, RO</span>
   </footer>
 
   <script>
@@ -352,17 +546,26 @@
     document.getElementById('navUsername').textContent = username;
     document.getElementById('dropdownName').textContent = username.toUpperCase();
     document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
+
     function toggleDropdown() { document.getElementById('navUser').classList.toggle('open'); }
-    document.addEventListener('click', e => { if (!document.getElementById('navUser').contains(e.target)) document.getElementById('navUser').classList.remove('open'); });
-    function logout() { localStorage.removeItem('isLoggedIn'); localStorage.removeItem('username'); window.location.href = 'index.html'; }
+    function toggleApps() { document.getElementById('appsPanel').classList.toggle('open'); }
+
+    document.addEventListener('click', e => {
+      if (!document.getElementById('navUser').contains(e.target)) document.getElementById('navUser').classList.remove('open');
+      if (!document.getElementById('appsTrigger').contains(e.target) && !document.getElementById('appsPanel').contains(e.target)) {
+        document.getElementById('appsPanel').classList.remove('open');
+      }
+    });
+
+    function logout() { localStorage.removeItem('isLoggedIn'); localStorage.removeItem('username'); localStorage.removeItem('token'); window.location.href = 'index.html'; }
 
     // SLIDESHOW
     const SLIDE_DURATION = 5000;
     const TOTAL = 5;
     let current = 0, paused = false, timer = null, raf = null, t0 = null, elapsed = 0;
     const slides = document.querySelectorAll('.slide');
-    const dots   = document.querySelectorAll('.slide-dot');
-    const bar    = document.getElementById('slideProgress');
+    const dots = document.querySelectorAll('.slide-dot');
+    const bar = document.getElementById('slideProgress');
     const pauseBtn = document.getElementById('pauseBtn');
 
     function goToSlide(i) {
@@ -402,25 +605,20 @@
       paused = !paused;
       pauseBtn.textContent = paused ? '▶' : '⏸';
       pauseBtn.classList.toggle('paused', paused);
-      if (paused) {
-        clearTimeout(timer);
-        if (raf) cancelAnimationFrame(raf);
-        elapsed += Date.now() - t0;
-      } else {
-        startTimer();
-      }
+      if (paused) { clearTimeout(timer); if (raf) cancelAnimationFrame(raf); elapsed += Date.now() - t0; }
+      else startTimer();
     }
 
     document.addEventListener('keydown', e => {
       if (e.key === 'ArrowRight') nextSlide();
-      if (e.key === 'ArrowLeft')  prevSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
       if (e.key === ' ') { e.preventDefault(); togglePause(); }
     });
 
     let tx = 0;
     const sc = document.getElementById('slidesContainer');
     sc.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive:true });
-    sc.addEventListener('touchend',   e => { const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) dx < 0 ? nextSlide() : prevSlide(); });
+    sc.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) dx < 0 ? nextSlide() : prevSlide(); });
 
     startTimer();
   </script>
