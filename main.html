@@ -501,7 +501,7 @@
     // ── SOCKET.IO ──
     let socket = null;
     if (token) {
-      socket = io(API, { auth: { token } });
+      socket = io(API, { auth: { token }, transports: ['polling'] });
 
       socket.on('online_users', (users) => {
         document.getElementById('onlineCount').textContent = `${users.length} online`;
