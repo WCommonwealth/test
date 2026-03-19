@@ -542,7 +542,7 @@
 
     // ── SOCKET.IO — real-time new messages ──
     if (token) {
-      const socket = io(API, { auth: { token } });
+      const socket = io(API, { auth: { token }, transports: ['polling'] });
       socket.on('new_message', (msg) => {
         inboxData.unshift(msg);
         loadInbox();
