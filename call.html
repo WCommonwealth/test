@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Walar Voice</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --glass-bg: rgba(255,255,255,0.07);
+      --glass-border: rgba(255,255,255,0.14);
+      --accent: #3ecfff;
+      --accent2: #a78bfa;
+      --accent3: #34d399;
+      --text-primary: rgba(255,255,255,0.95);
+      --text-secondary: rgba(255,255,255,0.55);
+      --text-muted: rgba(255,255,255,0.3);
+      --bg-deep: #050810;
+      --font-main: 'Space Grotesk', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:var(--font-main); background:var(--bg-deep); color:var(--text-primary); min-height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+
+    .bg-canvas { position:fixed; inset:0; z-index:0; }
+    .bg-canvas::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(62,207,255,0.10) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167,139,250,0.08) 0%, transparent 60%); }
+    .bg-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px, transparent 1px); background-size:60px 60px; }
+
+    nav { position:relative; z-index:10; padding:0 32px; height:60px; display:flex; align-items:center; justify-content:space-between; background:rgba(5,8,16,0.8); backdrop-filter:blur(20px); border-bottom:1px solid var(--glass-border); }
+    .nav-logo { display:flex; align-items:center; gap:10px; font-weight:600; font-size:14px; }
+    .nav-logo-icon { width:26px; height:26px; border-radius:7px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:13px; font-weight:700; color:#000; }
+    .nav-back { font-family:var(--font-mono); font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--accent); }
+    .nav-user-badge { font-family:var(--font-mono); font-size:11px; color:var(--accent); letter-spacing:0.1em; padding:4px 10px; border:1px solid rgba(62,207,255,0.3); border-radius:20px; background:rgba(62,207,255,0.05); }
+
+    .main { position:relative; z-index:1; flex:1; display:flex; align-items:center; justify-content:center; padding:40px 24px; }
+
+    /* IDLE STATE */
+    .voice-card {
+      background:var(--glass-bg); border:1px solid var(--glass-border);
+      border-radius:28px; padding:48px 40px;
+      width:100%; max-width:420px;
+      backdrop-filter:blur(40px);
+      box-shadow:0 0 0 1px rgba(255,255,255,0.04) inset, 0 40px 120px rgba(0,0,0,0.5);
+      text-align:center; position:relative; overflow:hidden;
+    }
+    .voice-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.22),transparent); }
+
+    .voice-title { font-size:22px; font-weight:700; letter-spacing:-0.02em; margin-bottom:6px; }
+    .voice-subtitle { font-family:var(--font-mono); font-size:11px; color:var(--text-muted); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:32px; }
+
+    .user-select-label { font-family:var(--font-mono); font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); display:block; text-align:left; margin-bottom:8px; }
+    .user-select {
+      width:100%; padding:12px 16px;
+      background:rgba(255,255,255,0.04); border:1px solid var(--glass-border);
+      border-radius:10px; color:var(--text-primary);
+      font-family:var(--font-main); font-size:14px; outline:none;
+      transition:all 0.2s; margin-bottom:20px;
+      appearance:none; -webkit-appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.3)' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat:no-repeat; background-position:right 14px center;
+      cursor:pointer;
+    }
+    .user-select:focus { border-color:rgba(62,207,255,0.4); box-shadow:0 0 0 3px rgba(62,207,255,0.08); }
+    .user-select option { background:#0a0f1e; }
+
+    .btn-call {
+      width:100%; padding:14px;
+      background:linear-gradient(135deg,var(--accent3),#22c55e);
+      border:none; border-radius:12px;
+      color:#000; font-family:var(--font-main);
+      font-size:15px; font-weight:700;
+      cursor:pointer; transition:all 0.25s;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+    }
+    .btn-call:hover { transform:scale(1.02); box-shadow:0 8px 30px rgba(52,211,153,0.35); }
+    .btn-call:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+
+    .status-msg { font-family:var(--font-mono); font-size:12px; color:var(--text-muted); margin-top:16px; letter-spacing:0.05em; min-height:20px; }
+    .status-msg.error { color:rgba(255,100,100,0.8); }
+    .status-msg.success { color:var(--accent3); }
+
+    /* INCOMING CALL OVERLAY */
+    .incoming-overlay {
+      display:none; position:fixed; inset:0; z-index:500;
+      background:rgba(5,8,16,0.92); backdrop-filter:blur(20px);
+      align-items:center; justify-content:center;
+    }
+    .incoming-overlay.show { display:flex; }
+    .incoming-card {
+      background:rgba(10,14,30,0.98); border:1px solid var(--glass-border);
+      border-radius:28px; padding:48px 40px; text-align:center;
+      max-width:340px; width:90%;
+      box-shadow:0 40px 120px rgba(0,0,0,0.7);
+      animation:ringIn 0.3s ease;
+    }
+    @keyframes ringIn { from{transform:scale(0.9);opacity:0;} to{transform:scale(1);opacity:1;} }
+    .incoming-avatar {
+      width:80px; height:80px; border-radius:50%;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      display:flex; align-items:center; justify-content:center;
+      font-size:32px; font-weight:700; color:#000;
+      margin:0 auto 20px;
+      animation:ring-pulse 1s ease-in-out infinite;
+    }
+    @keyframes ring-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(62,207,255,0.4);} 50%{box-shadow:0 0 0 16px rgba(62,207,255,0);} }
+    .incoming-name { font-size:24px; font-weight:700; margin-bottom:6px; }
+    .incoming-label { font-family:var(--font-mono); font-size:11px; color:var(--text-muted); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:32px; }
+    .incoming-actions { display:flex; gap:12px; justify-content:center; }
+    .btn-accept { flex:1; padding:14px; border-radius:12px; border:none; background:linear-gradient(135deg,var(--accent3),#22c55e); color:#000; font-size:14px; font-weight:700; font-family:var(--font-main); cursor:pointer; transition:all 0.2s; }
+    .btn-accept:hover { transform:scale(1.04); }
+    .btn-reject { flex:1; padding:14px; border-radius:12px; border:none; background:rgba(255,60,60,0.12); border:1px solid rgba(255,60,60,0.3); color:rgba(255,100,100,0.9); font-size:14px; font-weight:700; font-family:var(--font-main); cursor:pointer; transition:all 0.2s; }
+    .btn-reject:hover { background:rgba(255,60,60,0.2); }
+
+    /* ACTIVE CALL UI */
+    .call-ui { display:none; flex-direction:column; align-items:center; gap:32px; }
+    .call-ui.show { display:flex; }
+    .call-avatar {
+      width:100px; height:100px; border-radius:50%;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      display:flex; align-items:center; justify-content:center;
+      font-size:40px; font-weight:700; color:#000;
+      position:relative;
+    }
+    .call-avatar.speaking::after {
+      content:''; position:absolute; inset:-8px; border-radius:50%;
+      border:2px solid var(--accent3); animation:speaking-ring 1s ease-in-out infinite;
+    }
+    @keyframes speaking-ring { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.3;transform:scale(1.1);} }
+    .call-with { font-size:20px; font-weight:700; letter-spacing:-0.01em; }
+    .call-duration { font-family:var(--font-mono); font-size:14px; color:var(--accent3); letter-spacing:0.1em; }
+    .call-controls { display:flex; gap:16px; align-items:center; }
+    .ctrl-btn {
+      width:56px; height:56px; border-radius:50%;
+      border:none; display:flex; align-items:center; justify-content:center;
+      font-size:20px; cursor:pointer; transition:all 0.2s;
+    }
+    .ctrl-mute { background:var(--glass-bg); border:1px solid var(--glass-border); color:var(--text-primary); }
+    .ctrl-mute:hover { background:rgba(255,255,255,0.12); }
+    .ctrl-mute.muted { background:rgba(255,60,60,0.15); border-color:rgba(255,60,60,0.3); color:rgba(255,100,100,0.9); }
+    .ctrl-hangup { width:68px; height:68px; background:linear-gradient(135deg,#ef4444,#dc2626); color:#fff; font-size:22px; }
+    .ctrl-hangup:hover { transform:scale(1.08); box-shadow:0 8px 24px rgba(239,68,68,0.4); }
+
+    /* IDLE CARD hidden when call active */
+    .voice-card.hidden { display:none; }
+  </style>
+</head>
+<body>
+  <script>if (localStorage.getItem('isLoggedIn') !== 'true') window.location.href = 'index.html';</script>
+
+  <div class="bg-canvas"><div class="bg-grid"></div></div>
+
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-icon">W</div>
+      <span>Walar Voice</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <a href="main.html" class="nav-back">← Back</a>
+      <div class="nav-user-badge" id="nav-username">—</div>
+    </div>
+  </nav>
+
+  <!-- INCOMING CALL OVERLAY -->
+  <div class="incoming-overlay" id="incomingOverlay">
+    <div class="incoming-card">
+      <div class="incoming-avatar" id="incomingAvatar">?</div>
+      <div class="incoming-name" id="incomingName">—</div>
+      <div class="incoming-label">Incoming voice call</div>
+      <div class="incoming-actions">
+        <button class="btn-accept" onclick="acceptCall()">Accept</button>
+        <button class="btn-reject" onclick="rejectCall()">Decline</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- IDLE -->
+    <div class="voice-card" id="idleCard">
+      <div class="voice-title">Walar Voice</div>
+      <div class="voice-subtitle">Encrypted · Peer to Peer · Private</div>
+      <label class="user-select-label">Call a member</label>
+      <select class="user-select" id="userSelect">
+        <option value="">— select member —</option>
+      </select>
+      <button class="btn-call" id="callBtn" onclick="startCall()">
+        <span>📞</span> Start Voice Call
+      </button>
+      <div class="status-msg" id="statusMsg"></div>
+    </div>
+
+    <!-- ACTIVE CALL -->
+    <div class="call-ui" id="callUi">
+      <div class="call-avatar" id="callAvatar">?</div>
+      <div class="call-with" id="callWith">—</div>
+      <div class="call-duration" id="callDuration">00:00</div>
+      <div class="call-controls">
+        <button class="ctrl-btn ctrl-mute" id="muteBtn" onclick="toggleMute()" title="Mute">🎤</button>
+        <button class="ctrl-btn ctrl-hangup" onclick="hangUp()" title="Hang up">📵</button>
+      </div>
+    </div>
+  </div>
+
+  <audio id="remoteAudio" autoplay playsinline></audio>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script>
+    const API = 'https://TUNELUL_TAU.trycloudflare.com';
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username') || 'Member';
+    document.getElementById('nav-username').textContent = username.toUpperCase();
+
+    let socket, peerConnection, localStream;
+    let callTarget = null;
+    let isMuted = false;
+    let callTimer = null;
+    let callSeconds = 0;
+    let incomingOffer = null;
+    let incomingFrom = null;
+
+    const iceServers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+    // ── LOAD ONLINE USERS ──
+    socket = io(API, { auth: { token } });
+
+    socket.on('online_users', (users) => {
+      const sel = document.getElementById('userSelect');
+      sel.innerHTML = '<option value="">— select member —</option>';
+      users.filter(u => u !== username).forEach(u => {
+        const opt = document.createElement('option');
+        opt.value = u; opt.textContent = u;
+        sel.appendChild(opt);
+      });
+    });
+
+    // ── INCOMING CALL ──
+    socket.on('incoming_call', async ({ from, offer }) => {
+      incomingFrom = from;
+      incomingOffer = offer;
+      document.getElementById('incomingAvatar').textContent = from.charAt(0).toUpperCase();
+      document.getElementById('incomingName').textContent = from;
+      document.getElementById('incomingOverlay').classList.add('show');
+    });
+
+    socket.on('call_accepted', async ({ answer }) => {
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+      setStatus('Connected ✓', 'success');
+      showCallUI(callTarget);
+    });
+
+    socket.on('call_rejected', () => {
+      setStatus('Call declined.', 'error');
+      cleanup();
+    });
+
+    socket.on('call_failed', ({ reason }) => {
+      setStatus(reason, 'error');
+      cleanup();
+    });
+
+    socket.on('ice_candidate', async ({ candidate }) => {
+      try {
+        if (peerConnection && candidate) await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+      } catch {}
+    });
+
+    socket.on('hang_up', () => {
+      setStatus('Call ended.', '');
+      cleanup();
+      hideCallUI();
+    });
+
+    // ── START CALL ──
+    async function startCall() {
+      const target = document.getElementById('userSelect').value;
+      if (!target) { setStatus('Select a member to call.', 'error'); return; }
+
+      setStatus('Requesting microphone...', '');
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      } catch {
+        setStatus('Microphone access denied.', 'error');
+        return;
+      }
+
+      callTarget = target;
+      setStatus(`Calling ${target}...`, '');
+
+      peerConnection = new RTCPeerConnection(iceServers);
+      localStream.getTracks().forEach(t => peerConnection.addTrack(t, localStream));
+
+      peerConnection.onicecandidate = ({ candidate }) => {
+        if (candidate) socket.emit('ice_candidate', { to: callTarget, candidate });
+      };
+
+      peerConnection.ontrack = ({ streams }) => {
+        document.getElementById('remoteAudio').srcObject = streams[0];
+      };
+
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+      socket.emit('call_user', { to: callTarget, offer });
+    }
+
+    // ── ACCEPT CALL ──
+    async function acceptCall() {
+      document.getElementById('incomingOverlay').classList.remove('show');
+      callTarget = incomingFrom;
+
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      } catch {
+        setStatus('Microphone access denied.', 'error');
+        return;
+      }
+
+      peerConnection = new RTCPeerConnection(iceServers);
+      localStream.getTracks().forEach(t => peerConnection.addTrack(t, localStream));
+
+      peerConnection.onicecandidate = ({ candidate }) => {
+        if (candidate) socket.emit('ice_candidate', { to: callTarget, candidate });
+      };
+
+      peerConnection.ontrack = ({ streams }) => {
+        document.getElementById('remoteAudio').srcObject = streams[0];
+      };
+
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(incomingOffer));
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+      socket.emit('call_accepted', { to: callTarget, answer });
+
+      showCallUI(callTarget);
+    }
+
+    // ── REJECT CALL ──
+    function rejectCall() {
+      document.getElementById('incomingOverlay').classList.remove('show');
+      socket.emit('call_rejected', { to: incomingFrom });
+      incomingFrom = null;
+      incomingOffer = null;
+    }
+
+    // ── HANG UP ──
+    function hangUp() {
+      socket.emit('hang_up', { to: callTarget });
+      cleanup();
+      hideCallUI();
+      setStatus('Call ended.', '');
+    }
+
+    // ── MUTE ──
+    function toggleMute() {
+      isMuted = !isMuted;
+      if (localStream) localStream.getAudioTracks().forEach(t => t.enabled = !isMuted);
+      const btn = document.getElementById('muteBtn');
+      btn.textContent = isMuted ? '🔇' : '🎤';
+      btn.classList.toggle('muted', isMuted);
+    }
+
+    // ── UTILS ──
+    function showCallUI(target) {
+      document.getElementById('idleCard').classList.add('hidden');
+      document.getElementById('callUi').classList.add('show');
+      document.getElementById('callAvatar').textContent = target.charAt(0).toUpperCase();
+      document.getElementById('callWith').textContent = target;
+      callSeconds = 0;
+      callTimer = setInterval(() => {
+        callSeconds++;
+        const m = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+        const s = String(callSeconds % 60).padStart(2, '0');
+        document.getElementById('callDuration').textContent = `${m}:${s}`;
+      }, 1000);
+    }
+
+    function hideCallUI() {
+      document.getElementById('idleCard').classList.remove('hidden');
+      document.getElementById('callUi').classList.remove('show');
+      clearInterval(callTimer);
+      document.getElementById('callDuration').textContent = '00:00';
+    }
+
+    function cleanup() {
+      if (peerConnection) { peerConnection.close(); peerConnection = null; }
+      if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+      callTarget = null;
+      isMuted = false;
+      document.getElementById('muteBtn').textContent = '🎤';
+      document.getElementById('muteBtn').classList.remove('muted');
+    }
+
+    function setStatus(msg, type) {
+      const el = document.getElementById('statusMsg');
+      el.textContent = msg;
+      el.className = 'status-msg' + (type ? ` ${type}` : '');
+    }
+  </script>
+</body>
+</html>
