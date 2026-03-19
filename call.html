@@ -221,7 +221,7 @@
     const iceServers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
     // ── LOAD ONLINE USERS ──
-    socket = io(API, { auth: { token } });
+    socket = io(API, { auth: { token }, transports: ['polling'] });
 
     socket.on('online_users', (users) => {
       const sel = document.getElementById('userSelect');
