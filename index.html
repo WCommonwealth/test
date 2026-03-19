@@ -222,6 +222,7 @@
     <h1 class="glitch" id="form-title">W Commonwealth Access</h1>
     <input type="text" id="username" placeholder="USERNAME" required>
     <input type="password" id="password" placeholder="PASSWORD" required>
+    <input type="email" id="email" placeholder="EMAIL" required style="display:none;">
     <input type="password" id="confirm-password" placeholder="CONFIRM PASSWORD" required style="display:none;">
     <button id="main-btn" onclick="handleSubmit()">Login</button>
     <div class="switch-link">
@@ -238,6 +239,7 @@
 
     function toggleMode() {
       isRegisterMode = !isRegisterMode;
+      const emailInput = document.getElementById('email');
       const confirmInput = document.getElementById('confirm-password');
       const title = document.getElementById('form-title');
       const btn = document.getElementById('main-btn');
@@ -251,12 +253,14 @@
         title.textContent = 'Create Account';
         btn.textContent = 'Register';
         confirmInput.style.display = 'block';
+        emailInput.style.display = 'block';
         switchText.textContent = 'Have an account?';
         switchAction.textContent = 'Login';
       } else {
         title.textContent = 'W Commonwealth Access';
         btn.textContent = 'Login';
         confirmInput.style.display = 'none';
+        emailInput.style.display = 'none';
         switchText.textContent = 'No account?';
         switchAction.textContent = 'Register';
       }
@@ -308,13 +312,14 @@
     async function register() {
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
+      const email = document.getElementById('email').value.trim();
       const confirm = document.getElementById('confirm-password').value;
       const error = document.getElementById('error');
       const success = document.getElementById('success');
       error.style.display = 'none';
       success.style.display = 'none';
 
-      if (!username || !password || !confirm) {
+      if (!username || !password || !email || !confirm) {
         error.textContent = 'Please fill in all fields.';
         error.style.display = 'block';
         return;
@@ -330,7 +335,7 @@
         const res = await fetch(`${API}/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
+          body: JSON.stringify({ username, password, email })
         });
         const data = await res.json();
 
