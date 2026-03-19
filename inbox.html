@@ -367,7 +367,7 @@
   </div>
 
   <script>
-    const API = 'https://produce-newsletters-catalog-supreme.trycloudflare.com';
+    const API = 'https://TUNELUL_TAU.trycloudflare.com';
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username') || 'Member';
     document.getElementById('nav-username').textContent = username.toUpperCase();
@@ -540,8 +540,18 @@
       }
     }
 
+    // ── SOCKET.IO — real-time new messages ──
+    if (token) {
+      const socket = io(API, { auth: { token } });
+      socket.on('new_message', (msg) => {
+        inboxData.unshift(msg);
+        loadInbox();
+      });
+    }
+
     // Init
     loadInbox();
   </script>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </body>
 </html>
