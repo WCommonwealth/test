@@ -131,7 +131,7 @@
     .hero-sub { font-size:18px;color:var(--text-secondary);font-weight:300;max-width:500px;line-height:1.6;margin-bottom:48px;opacity:0;animation:fadeUp 0.9s ease forwards 0.5s; }
     @keyframes fadeUp { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
 
-    .quick-grid { display:grid;grid-template-columns:repeat(5,1fr);gap:12px;width:100%;max-width:1100px;margin-bottom:40px;opacity:0;animation:fadeUp 1s ease forwards 0.55s; }
+    .quick-grid { display:grid;grid-template-columns:repeat(6,1fr);gap:12px;width:100%;max-width:1100px;margin-bottom:40px;opacity:0;animation:fadeUp 1s ease forwards 0.55s; }
     .quick-card { background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:20px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-decoration:none;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;backdrop-filter:blur(20px); }
     .quick-card::before { content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glass-highlight),transparent); }
     .quick-card:hover { transform:translateY(-3px);box-shadow:0 20px 40px rgba(0,0,0,0.4); }
@@ -248,7 +248,7 @@
       <div class="apps-panel" id="appsPanel">
         <div class="apps-panel-title">Walar Services</div>
         <div class="apps-grid">
-          <a href="/encrypt.html" target="_blank" class="app-item">
+          <a href="https://wcommonwealth.github.io/encrypt/" target="_blank" class="app-item">
             <div class="app-icon" style="background:linear-gradient(135deg,rgba(62,207,255,0.2),rgba(62,207,255,0.05));">🔐</div>
             <div class="app-name" style="color:var(--accent);">Encrypt</div>
           </a>
@@ -259,6 +259,10 @@
           <a href="call.html" class="app-item">
             <div class="app-icon" style="background:linear-gradient(135deg,rgba(52,211,153,0.2),rgba(52,211,153,0.05));">📞</div>
             <div class="app-name" style="color:var(--accent3);">Voice</div>
+          </a>
+          <a href="wallet.html" class="app-item">
+            <div class="app-icon" style="background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,215,0,0.05));">💰</div>
+            <div class="app-name" style="color:rgba(255,215,0,0.9);">Wallet</div>
           </a>
           <div class="app-item soon">
             <div class="app-icon" style="background:linear-gradient(135deg,rgba(255,170,50,0.2),rgba(255,170,50,0.05));">📈</div>
@@ -300,7 +304,7 @@
     <p class="hero-sub">One interface. Every tool in the Walar ecosystem. Built for those who were trusted with access.</p>
 
     <div class="quick-grid">
-      <a href="encrypt.html" target="_blank" class="quick-card qc-1">
+      <a href="https://wcommonwealth.github.io/encrypt/" target="_blank" class="quick-card qc-1">
         <div class="quick-card-icon">🔐</div>
         <div class="quick-card-name">Encrypt</div>
         <div class="quick-card-desc">Speak through code</div>
@@ -316,7 +320,13 @@
         <div class="quick-card-icon">📞</div>
         <div class="quick-card-name" style="color:var(--accent3);">Voice</div>
         <div class="quick-card-desc">P2P encrypted call</div>
-        <div class="quick-card-badge" style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);color:var(--accent3);">unstable</div>
+        <div class="quick-card-badge" style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);color:var(--accent3);">Active</div>
+      </a>
+      <a href="wallet.html" class="quick-card" style="border-color:rgba(255,215,0,0.15);" onmouseover="this.style.borderColor='rgba(255,215,0,0.4)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.4),0 0 30px rgba(255,215,0,0.08)'" onmouseout="this.style.borderColor='rgba(255,215,0,0.15)';this.style.boxShadow=''">
+        <div class="quick-card-icon">💰</div>
+        <div class="quick-card-name" style="color:rgba(255,215,0,0.9);">Wallet</div>
+        <div class="quick-card-desc">Download Walar Wallet</div>
+        <div class="quick-card-badge" style="background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.25);color:rgba(255,215,0,0.9);">v0.1.0</div>
       </a>
       <div class="quick-card qc-3 soon">
         <div class="quick-card-icon">📈</div>
@@ -333,7 +343,7 @@
       <div class="quick-card qc-5 soon">
         <div class="quick-card-icon">𝕎</div>
         <div class="quick-card-name">Language</div>
-        <div class="quick-card-desc">The original writing</div>
+        <div class="quick-card-desc">The original code</div>
         <div class="quick-card-badge">Soon</div>
       </div>
     </div>
@@ -347,7 +357,7 @@
             <div class="slide-title">Speak Through Code.</div>
             <div class="slide-desc">The simplest, fastest, and most secure way to communicate within the Walar network. Your words become unreadable to the outside world — instantly.</div>
             <div class="slide-slogan">// encrypt · transmit · vanish</div>
-            <a href="encrypt.html" target="_blank" class="slide-cta slide-cta-primary">Open Encrypt ↗</a>
+            <a href="https://wcommonwealth.github.io/encrypt/" target="_blank" class="slide-cta slide-cta-primary">Open Encrypt ↗</a>
           </div>
           <div class="slide-art">
             <div class="slide-art-ring" style="inset:0;color:rgba(62,207,255,0.25);animation-duration:14s;"></div>
@@ -404,10 +414,10 @@
           <div class="slide-icon">𝕎</div>
           <div class="slide-content">
             <div class="slide-tag"><div class="slide-tag-dot"></div>05 / Walar Language</div>
-            <div class="slide-title">The Unknown Hieroglyphs.</div>
-            <div class="slide-desc">A unique and powerful writing system — the main legacy of Walar. Developed by the two founders in 2019. Use it to store precious information no one outside the circle can ever understand.</div>
+            <div class="slide-title">The Original Code.</div>
+            <div class="slide-desc">A unique and private writing system — the main legacy of Walar. Developed by the two founders in the 3rd grade (2019). Use it to store precious information no one outside the circle can ever understand.</div>
             <div class="slide-slogan">// legacy · culture · unbreakable</div>
-            <button class="slide-cta slide-cta-ghost">Walarian Archive →</button>
+            <button class="slide-cta slide-cta-ghost">Documented Walarian →</button>
           </div>
           <div class="slide-art">
             <div class="slide-art-ring" style="inset:0;color:rgba(251,113,133,0.25);animation-duration:13s;"></div>
