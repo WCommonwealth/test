@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Walar Wallet — Download</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --glass-bg: rgba(255,255,255,0.07);
+      --glass-border: rgba(255,255,255,0.14);
+      --glass-highlight: rgba(255,255,255,0.22);
+      --accent: #3ecfff;
+      --accent2: #a78bfa;
+      --accent3: #34d399;
+      --text-primary: rgba(255,255,255,0.95);
+      --text-secondary: rgba(255,255,255,0.55);
+      --text-muted: rgba(255,255,255,0.3);
+      --bg-deep: #050810;
+      --font-main: 'Space Grotesk', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:var(--font-main); background:var(--bg-deep); color:var(--text-primary); min-height:100vh; overflow-x:hidden; }
+
+    .bg-canvas { position:fixed; inset:0; z-index:0; overflow:hidden; }
+    .bg-canvas::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(62,207,255,0.12) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167,139,250,0.10) 0%, transparent 60%), radial-gradient(ellipse 40% 40% at 50% 50%, rgba(52,211,153,0.05) 0%, transparent 70%); }
+    .bg-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px, transparent 1px); background-size:60px 60px; }
+    .orb { position:absolute; border-radius:50%; filter:blur(80px); animation:drift 20s ease-in-out infinite; }
+    .orb-1 { width:500px;height:500px;background:radial-gradient(circle,rgba(62,207,255,0.15),transparent);top:-100px;left:-100px; }
+    .orb-2 { width:400px;height:400px;background:radial-gradient(circle,rgba(167,139,250,0.12),transparent);bottom:-80px;right:-80px;animation-delay:-7s; }
+    .orb-3 { width:300px;height:300px;background:radial-gradient(circle,rgba(52,211,153,0.10),transparent);top:50%;left:60%;animation-delay:-14s; }
+    @keyframes drift { 0%,100%{transform:translate(0,0) scale(1);} 33%{transform:translate(40px,-30px) scale(1.05);} 66%{transform:translate(-20px,40px) scale(0.95);} }
+
+    nav { position:fixed;top:0;left:0;right:0;z-index:100;padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(5,8,16,0.75);backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--glass-border); }
+    .nav-logo { display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;letter-spacing:0.04em; }
+    .nav-logo-icon { width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:14px;font-family:var(--font-mono);font-weight:700;color:#000; }
+    .nav-label { font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;padding:3px 8px;border:1px solid rgba(62,207,255,0.3);border-radius:4px;background:rgba(62,207,255,0.05); }
+    .nav-version { font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:0.1em; }
+
+    /* HERO */
+    .hero { position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 40px 80px;text-align:center; }
+
+    .hero-eyebrow { font-family:var(--font-mono);font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:24px;opacity:0;animation:fadeUp 0.8s ease forwards 0.2s;display:flex;align-items:center;gap:10px; }
+    .hero-eyebrow::before { content:'';width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--accent)); }
+    .hero-eyebrow::after { content:'';width:40px;height:1px;background:linear-gradient(90deg,var(--accent),transparent); }
+
+    .wallet-icon {
+      width:100px;height:100px;border-radius:26px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      display:flex;align-items:center;justify-content:center;
+      font-size:48px;margin:0 auto 32px;
+      box-shadow:0 20px 60px rgba(62,207,255,0.3);
+      opacity:0;animation:fadeUp 0.9s ease forwards 0.25s;
+      position:relative;
+    }
+    .wallet-icon::after { content:'';position:absolute;inset:0;border-radius:26px;background:inherit;filter:blur(30px);opacity:0.5;transform:scale(1.2);z-index:-1; }
+
+    .hero-title { font-size:clamp(42px,6vw,80px);font-weight:700;line-height:1.05;letter-spacing:-0.03em;margin-bottom:16px;opacity:0;animation:fadeUp 0.9s ease forwards 0.35s; }
+    .hero-title .line-1 { display:block;color:var(--text-primary); }
+    .hero-title .line-2 { display:block;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 50%,var(--accent3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+
+    .hero-sub { font-size:18px;color:var(--text-secondary);font-weight:300;max-width:520px;line-height:1.6;margin-bottom:16px;opacity:0;animation:fadeUp 0.9s ease forwards 0.5s; }
+
+    .version-badge {
+      display:inline-flex;align-items:center;gap:6px;
+      padding:5px 14px;border-radius:20px;
+      font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;
+      border:1px solid rgba(255,200,50,0.4);background:rgba(255,200,50,0.06);color:rgba(255,200,50,0.85);
+      margin-bottom:48px;opacity:0;animation:fadeUp 0.9s ease forwards 0.55s;
+    }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
+
+    /* DOWNLOAD CARDS */
+    .download-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:16px;width:100%;max-width:860px;opacity:0;animation:fadeUp 1s ease forwards 0.7s; }
+
+    .download-card {
+      background:var(--glass-bg);border:1px solid var(--glass-border);
+      border-radius:22px;padding:28px 24px;
+      backdrop-filter:blur(40px);
+      position:relative;overflow:hidden;
+      transition:all 0.25s;text-decoration:none;
+      display:flex;flex-direction:column;align-items:center;gap:12px;
+      cursor:pointer;
+    }
+    .download-card::before { content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glass-highlight),transparent); }
+    .download-card:hover { transform:translateY(-4px); }
+    .download-card.soon { opacity:0.5;cursor:default;pointer-events:none; }
+
+    .dc-macos:hover { border-color:rgba(62,207,255,0.4);box-shadow:0 20px 50px rgba(0,0,0,0.4),0 0 30px rgba(62,207,255,0.1); }
+    .dc-windows:hover { border-color:rgba(167,139,250,0.4);box-shadow:0 20px 50px rgba(0,0,0,0.4),0 0 30px rgba(167,139,250,0.1); }
+    .dc-linux:hover { border-color:rgba(255,170,50,0.4);box-shadow:0 20px 50px rgba(0,0,0,0.4),0 0 30px rgba(255,170,50,0.1); }
+
+    .dc-icon { font-size:36px; }
+    .dc-platform { font-size:16px;font-weight:700;letter-spacing:-0.01em; }
+    .dc-macos .dc-platform { color:var(--accent); }
+    .dc-windows .dc-platform { color:var(--accent2); }
+    .dc-linux .dc-platform { color:rgba(255,170,50,0.9); }
+
+    .dc-desc { font-size:12px;font-family:var(--font-mono);color:var(--text-muted);text-align:center;letter-spacing:0.05em;line-height:1.5; }
+
+    .dc-btn {
+      width:100%;padding:11px;border-radius:10px;border:none;
+      font-family:var(--font-main);font-size:13px;font-weight:600;
+      cursor:pointer;transition:all 0.2s;letter-spacing:0.02em;
+      display:flex;align-items:center;justify-content:center;gap:6px;
+      text-decoration:none;
+    }
+    .dc-macos .dc-btn { background:linear-gradient(135deg,var(--accent),rgba(62,207,255,0.7));color:#000; }
+    .dc-windows .dc-btn { background:linear-gradient(135deg,var(--accent2),rgba(167,139,250,0.7));color:#000; }
+    .dc-linux .dc-btn { background:rgba(255,170,50,0.15);border:1px solid rgba(255,170,50,0.3);color:rgba(255,170,50,0.9); }
+
+    .dc-size { font-family:var(--font-mono);font-size:10px;color:var(--text-muted);letter-spacing:0.1em; }
+
+    /* ALSO AVAILABLE — MSI */
+    .alt-download {
+      margin-top:16px;opacity:0;animation:fadeUp 1s ease forwards 0.85s;
+    }
+    .alt-download-card {
+      background:var(--glass-bg);border:1px solid var(--glass-border);
+      border-radius:16px;padding:16px 24px;
+      backdrop-filter:blur(20px);
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      max-width:860px;width:100%;
+    }
+    .alt-download-label { font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase; }
+    .alt-download-name { font-size:14px;font-weight:600;color:var(--text-secondary);margin-top:2px; }
+    .alt-download-btn {
+      padding:8px 20px;border-radius:8px;border:none;
+      background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.25);
+      color:var(--accent2);font-family:var(--font-main);font-size:12px;font-weight:600;
+      cursor:pointer;transition:all 0.2s;text-decoration:none;white-space:nowrap;
+      display:flex;align-items:center;gap:6px;
+    }
+    .alt-download-btn:hover { background:rgba(167,139,250,0.18); }
+
+    /* FEATURES */
+    .features-section { position:relative;z-index:1;padding:80px 40px;max-width:900px;margin:0 auto; }
+    .features-eyebrow { font-family:var(--font-mono);font-size:11px;letter-spacing:0.25em;color:var(--text-muted);text-transform:uppercase;margin-bottom:40px;text-align:center; }
+    .features-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:16px; }
+    .feature-card { background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:18px;padding:24px;backdrop-filter:blur(20px);position:relative;overflow:hidden; }
+    .feature-card::before { content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glass-highlight),transparent); }
+    .feature-icon { font-size:24px;margin-bottom:12px; }
+    .feature-title { font-size:14px;font-weight:700;margin-bottom:8px;color:var(--text-primary); }
+    .feature-desc { font-size:13px;color:var(--text-secondary);line-height:1.6;font-weight:300; }
+
+    footer { position:relative;z-index:1;padding:30px 40px;text-align:center;border-top:1px solid var(--glass-border);font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:0.1em; }
+
+
+    /* SOURCE */
+    .source-card { background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:18px;padding:24px 28px;backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:16px;position:relative;overflow:hidden; }
+    .source-card::before { content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glass-highlight),transparent); }
+    .source-card-left { display:flex;align-items:center;gap:16px; }
+    .source-icon { font-size:28px;flex-shrink:0; }
+    .source-title { font-size:16px;font-weight:700;margin-bottom:4px; }
+    .source-desc { font-size:13px;color:var(--text-secondary);font-weight:300;max-width:460px;line-height:1.5; }
+    .source-btn { padding:10px 22px;border-radius:10px;background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-primary);font-family:var(--font-main);font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;transition:all 0.2s; }
+    .source-btn:hover { background:rgba(255,255,255,0.12);border-color:var(--glass-highlight); }
+    .code-block { background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden; }
+    .code-block-header { display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--glass-border);background:rgba(255,255,255,0.03); }
+    .code-block-title { font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:0.1em; }
+    .code-copy-btn { padding:4px 12px;border-radius:6px;background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-muted);font-family:var(--font-mono);font-size:10px;cursor:pointer;transition:all 0.2s; }
+    .code-copy-btn:hover { color:var(--text-primary);background:rgba(255,255,255,0.1); }
+    .code-content { padding:20px;font-family:var(--font-mono);font-size:13px;line-height:1.8;color:var(--text-secondary);overflow-x:auto;white-space:pre; }
+    .code-comment { color:var(--text-muted); }
+    @media (max-width:768px) {
+      nav{padding:0 20px;}
+      .download-grid{grid-template-columns:1fr;}
+      .features-grid{grid-template-columns:1fr;}
+      .hero{padding:100px 24px 60px;}
+      .alt-download-card{flex-direction:column;align-items:flex-start;}
+      .features-section{padding:60px 24px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-canvas">
+    <div class="bg-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-icon">W</div>
+      <span>Walar</span>
+      <span class="nav-label">Wallet</span>
+    </div>
+    <div class="nav-version">v0.1.0 — prerelease</div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-eyebrow">Walar Organization</div>
+
+    <div class="wallet-icon">💰</div>
+
+    <h1 class="hero-title">
+      <span class="line-1">Walar Wallet</span>
+      <span class="line-2">Your Keys. Your Crypto.</span>
+    </h1>
+
+    <p class="hero-sub">A clean, minimal Solana wallet built for the Walar ecosystem. Secure, private, and designed with precision.</p>
+
+    <div class="version-badge">⚡ v0.1.0 · Prerelease · Use with caution</div>
+
+    <div class="download-grid">
+      <!-- macOS -->
+      <div class="download-card dc-macos">
+        <div class="dc-icon">🍎</div>
+        <div class="dc-platform">macOS</div>
+        <div class="dc-desc">macOS 11+<br>Apple Silicon & Intel</div>
+        <a href="https://github.com/WCommonwealth/walar-wallet/releases/download/prerelease/Walar.Wallet_0.1.0_x64_MacOS.dmg" class="dc-btn">⬇ Download .dmg</a>
+        <div class="dc-size">x64 · DMG</div>
+      </div>
+
+      <!-- Windows EXE -->
+      <div class="download-card dc-windows">
+        <div class="dc-icon">🪟</div>
+        <div class="dc-platform">Windows</div>
+        <div class="dc-desc">Windows 10/11<br>64-bit installer</div>
+        <a href="https://github.com/WCommonwealth/walar-wallet/releases/download/prerelease/Walar.Wallet_0.1.0_x64_Windows-setup.exe" class="dc-btn">⬇ Download .exe</a>
+        <div class="dc-size">x64 · EXE</div>
+      </div>
+
+      <!-- Linux -->
+      <div class="download-card dc-linux soon">
+        <div class="dc-icon">🐧</div>
+        <div class="dc-platform">Linux</div>
+        <div class="dc-desc">Coming soon<br>Ubuntu, Debian & more</div>
+        <div class="dc-btn" style="opacity:0.5;">⏳ Coming Soon</div>
+        <div class="dc-size">—</div>
+      </div>
+    </div>
+
+    <!-- MSI alternative -->
+    <div class="alt-download">
+      <div class="alt-download-card">
+        <div>
+          <div class="alt-download-label">Also available for Windows</div>
+          <div class="alt-download-name">Walar Wallet 0.1.0 — MSI Installer</div>
+        </div>
+        <a href="https://github.com/WCommonwealth/walar-wallet/releases/download/prerelease/Walar.Wallet_0.1.0_x64_en-US_WindowsMSI.msi" class="alt-download-btn">⬇ Download .msi</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="features-section">
+    <div class="features-eyebrow">Why Walar Wallet</div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <div class="feature-title">Non-Custodial</div>
+        <div class="feature-desc">Your keys never leave your device. Full control over your assets, always.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">Solana Native</div>
+        <div class="feature-desc">Built from the ground up for Solana. Fast, cheap transactions with native SOL support.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <div class="feature-title">Clean Design</div>
+        <div class="feature-desc">Apple-inspired minimal UI. No clutter, no noise — just your portfolio.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-title">Cross-Platform</div>
+        <div class="feature-desc">macOS and Windows supported. Linux coming soon.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-title">Encrypted Backup</div>
+        <div class="feature-desc">Password-protected JSON backup file on first launch. Never lose access.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Live Prices</div>
+        <div class="feature-desc">Real-time portfolio value. Always know what your assets are worth.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUILD FROM SOURCE -->
+  <section class="features-section" style="padding-top:0;">
+    <div class="features-eyebrow">Prefer to build it yourself?</div>
+    <div class="source-card">
+      <div class="source-card-left">
+        <div class="source-icon">⚙️</div>
+        <div>
+          <div class="source-title">Build from Source</div>
+          <div class="source-desc">Clone the repository, install dependencies and build Walar Wallet yourself. Full transparency — no hidden code.</div>
+        </div>
+      </div>
+      <a href="https://github.com/WCommonwealth/walar-wallet" target="_blank" class="source-btn">View on GitHub ↗</a>
+    </div>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-block-title">// Quick start</span>
+        <button class="code-copy-btn" onclick="copyCode()">⎘ Copy</button>
+      </div>
+      <pre class="code-content" id="sourceCode"><span class="code-comment"># Clone the repository</span>
+git clone https://github.com/WCommonwealth/walar-wallet.git
+cd walar-wallet
+
+<span class="code-comment"># Install dependencies</span>
+npm install
+
+<span class="code-comment"># Run in development</span>
+npm run dev
+
+<span class="code-comment"># Build for your platform</span>
+npm run build</pre>
+    </div>
+  </section>
+
+  <footer>© WALAR ORGANIZATION · WALAR WALLET v0.1.0 · PRERELEASE</footer>
+  <script>
+    function copyCode() {
+      const code = `# Clone the repository
+git clone https://github.com/WCommonwealth/walar-wallet.git
+cd walar-wallet
+
+# Install dependencies
+npm install
+
+# Run in development
+npm run dev
+
+# Build for your platform
+npm run build`;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.querySelector('.code-copy-btn');
+        btn.textContent = '✓ Copied';
+        setTimeout(() => btn.textContent = '⎘ Copy', 2000);
+      });
+    }
+  </script>
+</body>
+</html>
